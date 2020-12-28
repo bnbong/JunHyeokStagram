@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from requests import Response
+from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
@@ -33,7 +33,7 @@ class Images(APIView):
 
             image_list.append(image)
 
-        sorted_list = sorted(image_list, key=lambda  image: image.created_at, reverse=True)
+        sorted_list = sorted(image_list, key=lambda image: image.created_at, reverse=True)
 
         serializer = ImageSerializer(sorted_list, many=True)
 
@@ -49,7 +49,7 @@ class Images(APIView):
 
             serializer.save(creator=user)
 
-            return Response(data=serializer.data, status=status.HTTP_200_Ok)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         else:
 

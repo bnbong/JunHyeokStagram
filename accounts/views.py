@@ -20,11 +20,11 @@ class GoogleLogin(SocialLoginView):
     client_class = OAuth2Client
 
 
-@api_view(['GET'])
-def current_user(request):
-
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def current_user(request):
+#
+#     serializer = UserSerializer(request.user)
+#     return Response(serializer.data)
 
 
 class UserList(APIView):
@@ -95,7 +95,6 @@ class ExploreUsers(APIView):
     """
     explore 5 users
     """
-
     def get(self, request, format=None):
         last_five = User.objects.all().order_by('-date_joined') [:5]
         serializer = UserSerializer(last_five, many=True)

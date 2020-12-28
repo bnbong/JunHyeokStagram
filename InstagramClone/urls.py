@@ -26,8 +26,8 @@ urlpatterns = [
     # path('verify/', verify_jwt_token),
     # path('refresh/', refresh_jwt_token),
 
-    path('accounts/', include('accounts.urls')),
-    path('images/', include('images.urls')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('images/', include('images.urls', namespace='images')),
 
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),

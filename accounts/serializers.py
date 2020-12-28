@@ -2,6 +2,8 @@ from rest_auth.utils import import_callable
 from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from django.conf import settings
+
+from images.serializers import CountImageSerializer
 from .models import User
 
 # accounts.authentication 파일을 만들어서 django,contrib.auth의 get_user_model 메서드를 직접 정의한 후
@@ -12,8 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'email')
-        read_only_fields = ('email',)
+        fields = (
+            'id',
+            'profile_image',
+            'username',
+        )
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -40,7 +45,7 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('token','username','email','password')
+        fields = ('token','pk','username','email','password','profile_image')
 
 
 from rest_auth.serializers import JWTSerializer
@@ -67,6 +72,9 @@ class CustomJWTSerializer(JWTSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    images = CountImageSerializer(many=True, read_only=True)
+
+    post_count = serializers.ReadOnlyField()
     followers_count = serializers.ReadOnlyField()
     following_count = serializers.ReadOnlyField()
 
@@ -75,6 +83,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             'profile_image',
             'username',
+            'post_count',
             'followers_count',
             'following_count',
+            'images',
         )
