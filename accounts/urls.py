@@ -18,4 +18,7 @@ urlpatterns = [
     url(r'^(?P<user_id>\d+)/unfollow/$', views.UnFollowUser.as_view(), name='unfollow_user'),
     url(r'^(?P<username>\w+)/followers/$', views.UserFollowers.as_view(), name='user_followers'),
     url(r'^(?P<username>\w+)/following/$', views.UserFollowing.as_view(), name='user_following'),
+    url(r'^(?P<user_id>\d+)/makefriend/$', views.MakeFriend.as_view(), name='friend_user'),
+    url(r'^(?P<user_id>\d+)/deletefriend/$', views.DeleteFriend.as_view(), name='unfriend_user'),
+    url(r'^(?P<username>\w+)/friends/$', views.UserFriends.as_view(), name='user_friends'),
 ]

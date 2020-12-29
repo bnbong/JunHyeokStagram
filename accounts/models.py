@@ -2,7 +2,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
 from django.core.exceptions import ImproperlyConfigured
-from django.db import models
+from djongo import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.apps import apps as django_apps
@@ -63,18 +63,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=timezone.now
     )
 
-    followers = models.ManyToManyField(
-        "self",
-        blank = True,
-        symmetrical=False,
+    followers = models.ArrayReferenceField(
+        to="self",
+        #blank=True,
         related_name="instagram_followers",
     )
 
-    following = models.ManyToManyField(
-        "self",
-        blank=True,
-        symmetrical=False,
+    following = models.ArrayReferenceField(
+        to="self",
+        #blank=True,
         related_name="instagram_following",
+    )
+
+    friends = models.ArrayReferenceField(
+        to="self",
+        #blank=True,
+        related_name="instagram_friends",
     )
 
     profile_image = models.ImageField(

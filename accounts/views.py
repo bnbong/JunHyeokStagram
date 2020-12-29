@@ -156,7 +156,7 @@ class Search(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserFollowers(APIView):
+class UserFollowers(APIView): # 자기 자신을 팔로우 하지 못하는 기능을 추가하기.
 
     def get(self, request, username, format=None):
 
@@ -172,7 +172,7 @@ class UserFollowers(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class UserFollowing(APIView):
+class UserFollowing(APIView): # 자기 자신을 팔로우 하지 못하는 기능을 추가하기.
 
     def get(self, request, username, format=None):
 
@@ -184,5 +184,54 @@ class UserFollowing(APIView):
         following = user.following.all()
 
         serializer = UserSerializer(following, many=True)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class MakeFriend(APIView):
+
+    def post(self, request, user_id, format=None):
+        user = request.user
+
+        try:
+            user_to_friends = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        user.friends.add(user_to_friends)
+        user_to_friends.friends.add(user)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class DeleteFriend(APIView):
+
+    def post(self, request, user_id, format=None):
+
+        user = request.user
+
+        try:
+            user_to_friends = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        user.friends.remove(user_to_friends)
+        user_to_friends.friends.remove(user)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserFriends(APIView):
+
+    def get(self, request, username, format=None):
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        friends = user.friends.all()
+
+        serializer = UserSerializer(friends, many=True)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
