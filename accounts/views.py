@@ -4,7 +4,6 @@ from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 from rest_framework import permissions, status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken, UserProfileSerializer
@@ -18,13 +17,6 @@ class GoogleLogin(SocialLoginView):
     """
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
-
-
-# @api_view(['GET'])
-# def current_user(request):
-#
-#     serializer = UserSerializer(request.user)
-#     return Response(serializer.data)
 
 
 class UserList(APIView):
@@ -109,6 +101,8 @@ class FollowUser(APIView):
 
         try:
             user_to_follow = User.objects.get(id=user_id)
+            if user == user_to_follow: return Response(status=status.HTTP_400_BAD_REQUEST)
+            if user_to_follow in user.following.all(): return Response(status=status.HTTP_208_ALREADY_REPORTED) #반복적인 요청을 막기 위해 설계했지만 이 코드가 필요한가??
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -122,12 +116,13 @@ class FollowUser(APIView):
 
 class UnFollowUser(APIView):
 
-    def post(self, request, user_id, format=None):
+    def put(self, request, user_id, format=None):
 
         user = request.user
 
         try:
             user_to_follow = User.objects.get(id=user_id)
+            if user == user_to_follow: return Response(status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -156,7 +151,7 @@ class Search(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserFollowers(APIView): # 자기 자신을 팔로우 하지 못하는 기능을 추가하기.
+class UserFollowers(APIView):
 
     def get(self, request, username, format=None):
 
@@ -172,7 +167,7 @@ class UserFollowers(APIView): # 자기 자신을 팔로우 하지 못하는 기�
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class UserFollowing(APIView): # 자기 자신을 팔로우 하지 못하는 기능을 추가하기.
+class UserFollowing(APIView):
 
     def get(self, request, username, format=None):
 
@@ -195,6 +190,8 @@ class MakeFriend(APIView):
 
         try:
             user_to_friends = User.objects.get(id=user_id)
+            if user == user_to_friends : return Response(status=status.HTTP_400_BAD_REQUEST)
+            if user_to_friends in user.friends.all(): return Response(status=status.HTTP_208_ALREADY_REPORTED) #반복적인 요청을 막기 위해 설계했지만 이 코드가 필요한가??
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -206,12 +203,13 @@ class MakeFriend(APIView):
 
 class DeleteFriend(APIView):
 
-    def post(self, request, user_id, format=None):
+    def put(self, request, user_id, format=None):
 
         user = request.user
 
         try:
             user_to_friends = User.objects.get(id=user_id)
+            if user == user_to_friends: return Response(status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

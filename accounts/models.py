@@ -1,16 +1,14 @@
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
-from django.core.exceptions import ImproperlyConfigured
 from djongo import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.apps import apps as django_apps
-
-from InstagramClone import settings
 
 
 class UserManager(BaseUserManager):
+    use_in_migrations = True
+
     def create_user(self, email, username, password=None):
         """
         주어진 이메일, 닉네임, 비밀번호 등 개인정보로 User 인스턴스 생성
@@ -65,19 +63,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     followers = models.ArrayReferenceField(
         to="self",
-        #blank=True,
         related_name="instagram_followers",
     )
 
     following = models.ArrayReferenceField(
         to="self",
-        #blank=True,
         related_name="instagram_following",
     )
 
     friends = models.ArrayReferenceField(
         to="self",
-        #blank=True,
         related_name="instagram_friends",
     )
 
@@ -124,3 +119,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def following_count(self):
         return self.following.all().count()
+
+    @property
+    def friends_count(self):
+        return self.friends.all().count()
